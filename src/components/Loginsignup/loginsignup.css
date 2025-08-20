@@ -1,23 +1,51 @@
 .container{
-    display : flex;
-    flex-direction: column;
-    margin: auto;
-    width: 600px;
-    margin-top: 200px;
-    background: #ffff;
-    padding-bottom: 30px;
+  min-height: 100vh; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: url('../assets/background.jpg') no-repeat center center/cover;
+  color: white;
+  position: relative;
 }
 
-.header{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 9px;
-    width: 100%;
-    margin-top: 30px;
-    margin-bottom: 20px;
+.header {
+  display: flex;           
+  justify-content: center;   
+  margin-bottom: 10px;
+}
+.title {
+  position: absolute;
+  top: 30px;
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
 }
 
+.tab {
+  padding: 10px 30px;
+  margin: 10px;             /* small gap between buttons */
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #ddd;    /* default background */
+  color: #333333;               /* text color */
+  font-weight: bold;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+/* Active tab style */
+.tab.active {
+  background-color: #4c56af; /* green for active */
+  color: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Hover effect */
+.tab:hover {
+  background-color: #a695d9;
+  color: white;
+}
 .text{
     color : #3c009d;
     font-size: 48px;
@@ -30,6 +58,7 @@
     background: #3C009d;
     border-radius:9px;
 }
+
  .inputs{
     margin-top: 55 px;
     display: flex;
@@ -46,7 +75,7 @@
     height: 80px;
     background: #eaeaeaea;
     border-radius: 6px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
  }
 
  .input img{
@@ -65,13 +94,13 @@
 
  .forgot-password{
     padding-left: 62px;
-    margin-top: 27px;
-    color: #797979;
+    margin-top: 0px;
+    color: #faf9fc;
     font-size: 18px;
  }
 
  .forgot-password span{
-    color: #4c00b4;
+    color: #b41e00;
     cursor: pointer;
  }
 

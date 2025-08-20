@@ -1,0 +1,199 @@
+/* MyTournaments.css */
+.my-tournaments-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.my-tournaments-container {
+  width: 100%;
+  max-width: 1200px;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-section h1 {
+  color: #1565c0;
+  margin: 0;
+  font-size: 28px;
+}
+
+.back-btn {
+  background: #e0e0e0;
+  color: #424242;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.back-btn:hover {
+  background: #bdbdbd;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #5a7d9a;
+}
+
+.empty-state h2 {
+  color: #1565c0;
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.tournaments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.tournament-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border-left: 4px solid #2196f3;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.tournament-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  background: #e3f2fd;
+}
+
+.tournament-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.tournament-header h3 {
+  margin: 0;
+  color: #1565c0;
+  font-size: 1.2rem;
+  flex: 1;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.status-badge.upcoming {
+  background: #bbdefb;
+  color: #0d47a1;
+}
+
+.status-badge.ongoing {
+  background: #c8e6c9;
+  color: #2e7d32;
+}
+
+.status-badge.completed {
+  background: #f5f5f5;
+  color: #424242;
+}
+
+.tournament-dates {
+  margin-bottom: 1.5rem;
+}
+
+.tournament-dates p {
+  margin: 0.5rem 0;
+  color: #37474f;
+}
+
+.tournament-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.view-details {
+  color: #2196f3;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.btn-primary {
+  background: #2196f3;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #1976d2;
+  transform: translateY(-2px);
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.2rem;
+  color: #2c5aa0;
+}
+
+@media (max-width: 768px) {
+  .my-tournaments-page {
+    padding: 1rem;
+  }
+  
+  .my-tournaments-container {
+    padding: 1.5rem;
+  }
+  
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .tournaments-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tournament-header {
+    flex-direction: column;
+  }
+  
+  .status-badge {
+    margin-left: 0;
+    margin-top: 0.5rem;
+    align-self: flex-start;
+  }
+}

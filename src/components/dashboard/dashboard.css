@@ -1,0 +1,369 @@
+/* dashboard.css */
+.dashboard-container {
+  min-height: 100vh;
+  background-color: #f0f8ff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.2rem;
+  color: #2c5aa0;
+}
+
+.dashboard-header {
+  background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+  color: white;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info span {
+  font-weight: 500;
+}
+
+.logout-btn {
+  background-color: #ff5722;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #e64a19;
+}
+
+.navbar {
+  background-color: #2196f3;
+  padding: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  padding: 0.75rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li {
+  margin: 0;
+}
+
+.nav-links li a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 1rem 1.5rem;
+  display: block;
+  transition: background-color 0.3s;
+}
+
+.nav-links li a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.welcome-message {
+  color: #5a7d9a;
+  margin-bottom: 2rem;
+}
+
+.user-profile-section {
+  margin-bottom: 3rem;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.profile-header h2 {
+  color: #1565c0;
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.edit-profile-btn {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.edit-profile-btn:hover {
+  background-color: #1976d2;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.15);
+  display: flex;
+  justify-content: space-between;
+  border-top: 4px solid #2196f3;
+}
+
+.profile-info {
+  flex: 2;
+}
+
+.info-item {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.label {
+  font-weight: 600;
+  color: #1565c0;
+  min-width: 120px;
+}
+
+.value {
+  color: #37474f;
+}
+
+.profile-stats {
+  flex: 1;
+  display: flex;
+  justify-content: space-around;
+  border-left: 1px solid #e3f2fd;
+  padding-left: 2rem;
+}
+
+.profile-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-stat .stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2196f3;
+}
+
+.profile-stat .stat-label {
+  color: #5a7d9a;
+  font-size: 0.9rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.15);
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-top: 4px solid #42a5f5;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(33, 150, 243, 0.2);
+}
+
+.stat-card h3 {
+  margin-top: 0;
+  color: #1565c0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2196f3;
+  margin: 0.5rem 0;
+}
+
+.stat-label {
+  color: #5a7d9a;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.quick-actions {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.15);
+  border-top: 4px solid #42a5f5;
+}
+
+.quick-actions h2 {
+  margin-top: 0;
+  color: #1565c0;
+  border-bottom: 1px solid #e3f2fd;
+  padding-bottom: 0.5rem;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #e3f2fd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: #1565c0;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.action-btn:hover {
+  background: #bbdefb;
+  transform: translateY(-3px);
+}
+
+.action-btn .icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  .dashboard-header h1 {
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+  }
+  
+  .menu-toggle {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+  
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .nav-open {
+    display: flex !important;
+  }
+  
+  .profile-card {
+    flex-direction: column;
+  }
+  
+  .profile-stats {
+    border-left: none;
+    border-top: 1px solid #e3f2fd;
+    padding-left: 0;
+    padding-top: 2rem;
+    margin-top: 2rem;
+  }
+  
+  .stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-content {
+    padding: 1rem;
+  }
+  
+  .action-buttons {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .info-item {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .label {
+    min-width: auto;
+  }
+}
+
+@media (min-width: 769px) {
+  .menu-toggle {
+    display: none;
+  }
+  
+  .nav-links {
+    display: flex !important;
+  }
+}
