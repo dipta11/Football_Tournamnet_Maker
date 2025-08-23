@@ -116,6 +116,7 @@ function Dashboard() {
             <li><a href="/create-tournament">Create Tournament</a></li>
             <li><a href="/my-tournaments">My Tournaments</a></li>
             <li><a href="/add-player">Add Player</a></li>
+            <li> <a href ="/add-venue"> Add Venues</a></li>
             <li><a href="/dashboard">Dashboard</a></li>
           </ul>
         </div>
