@@ -128,3 +128,57 @@
     background: #EAEAEA;
     color: #797979;
  }
+
+ /* Add these styles to your loginsignup.css file */
+
+.guest-view-container {
+  margin-top: 2px;
+  text-align: center;
+}
+
+.or-divider {
+  display: flex;
+  align-items: center;
+  margin: 1px 0;
+}
+
+.or-divider::before,
+.or-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ccc;
+}
+
+.or-divider span {
+  padding: 0 10px;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.guest-view-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 220px;
+  height: 59px;
+  background: #4c00b4;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 19px;
+  font-weight: 700;
+  text-align: center;
+  transition: background-color 0.3s;
+  margin: 20px auto 0; 
+}
+
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .guest-view-button {
+    padding: 0px 0;
+  }
+}

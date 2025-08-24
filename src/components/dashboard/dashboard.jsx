@@ -86,7 +86,7 @@ function Dashboard() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate("/login");
+    navigate("/");
   };
 
   const toggleMenu = () => {

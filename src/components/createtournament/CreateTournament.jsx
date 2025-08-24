@@ -7,6 +7,7 @@ function CreateTournament() {
   const [tournamentName, setTournamentName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
   const [numGroups, setNumGroups] = useState(1);
   const [groupNames, setGroupNames] = useState([]);
   const [teamsPerGroup, setTeamsPerGroup] = useState(1);
@@ -57,112 +58,110 @@ function CreateTournament() {
     setTeamPlayers(updated);
   };
 
-const createTournamentStructure = async () => {
-  try {
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError) throw userError;
-    if (!user) throw new Error("User not logged in");
+  const createTournamentStructure = async () => {
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      if (!user) throw new Error("User not logged in");
 
-    const { data: tournament, error: tError } = await supabase
-      .from("tournament")
-      .insert([{
-        t_name: tournamentName,
-        start_date: startDate,
-        end_date: endDate,
-        status: "upcoming",
-        u_id: user.id
-      }])
-      .select()
-      .single();
-    if (tError) throw tError;
+      const { data: tournament, error: tError } = await supabase
+        .from("tournament")
+        .insert([{
+          t_name: tournamentName,
+          start_date: startDate,
+          end_date: endDate,
+          status: "upcoming",
+          u_id: user.id,
+          ispublic: isPublic
+        }])
+        .select()
+        .single();
+      if (tError) throw tError;
 
-    const t_id = tournament.t_id;
-    setTournamentId(t_id);
+      const t_id = tournament.t_id;
+      setTournamentId(t_id);
 
-    for (let gName of groupNames) {
-      const { error: gError } = await supabase
-        .from("group")
-        .insert([{ group_name: gName, t_id }]);
-      if (gError) throw gError;
-    }
-
-    const teamsMap = {};
-    
-    for (let gName of groupNames) {
-      const teams = groupTeams[gName];
-      if (!teams || teams.length !== Number(teamsPerGroup)) {
-        throw new Error(`Please add exactly ${teamsPerGroup} teams for group ${gName}`);
+      for (let gName of groupNames) {
+        const { error: gError } = await supabase
+          .from("group")
+          .insert([{ group_name: gName, t_id }]);
+        if (gError) throw gError;
       }
 
-      for (let teamName of teams) {
-        const { data: teamData, error: teamError } = await supabase
-          .from("team")
-          .insert([{ team_name: teamName }])
-          .select()
-          .single();
-        if (teamError) throw teamError;
+      const teamsMap = {};
+      
+      for (let gName of groupNames) {
+        const teams = groupTeams[gName];
+        if (!teams || teams.length !== Number(teamsPerGroup)) {
+          throw new Error(`Please add exactly ${teamsPerGroup} teams for group ${gName}`);
+        }
 
-        const team_id = teamData.team_id;
-        teamsMap[teamName] = team_id;
+        for (let teamName of teams) {
+          const { data: teamData, error: teamError } = await supabase
+            .from("team")
+            .insert([{ team_name: teamName }])
+            .select()
+            .single();
+          if (teamError) throw teamError;
 
-        // Fixed the column name from 'win' to 'wins'
-        await supabase
-          .from("teams_in_tournament")
-          .insert([{ 
-            t_id,
-            team_id, 
-            wins: 0, 
-            loss: 0, 
-            draw: 0, 
-            matches_played: 0, 
-            goals_for: 0, 
-            goals_against: 0, 
-            points: 0 
-          }]);
+          const team_id = teamData.team_id;
+          teamsMap[teamName] = team_id;
 
-        await supabase
-          .from("TeamsInGroup")
-          .insert([{ team_id, group_name: gName, t_id }]);
-      }
-    }
-    
-    setCreatedTeams(teamsMap);
-    return true;
-  } catch (err) {
-    alert(err.message);
-    return false;
-  }
-};
+          await supabase
+            .from("teams_in_tournament")
+            .insert([{ 
+              t_id,
+              team_id, 
+              wins: 0, 
+              loss: 0, 
+              draw: 0, 
+              matches_played: 0, 
+              goals_for: 0, 
+              goals_against: 0, 
+              points: 0 
+            }]);
 
-const assignPlayersToTeams = async () => {
-  try {
-    for (const [teamName, teamId] of Object.entries(createdTeams)) {
-      const players = teamPlayers[teamId];
-
-      if (!players || players.length !== Number(playersPerTeam)) {
-        throw new Error(`Please assign exactly ${playersPerTeam} players for team ${teamName}`);
-      }
-
-      for (let playerId of players) {
-        // Insert with t_id included
-        const { error } = await supabase
-          .from("players_in_team")
-          .insert([{ p_id: playerId, team_id: teamId, t_id: tournamentId }]);
-
-        if (error) {
-          throw error;
+          await supabase
+            .from("TeamsInGroup")
+            .insert([{ team_id, group_name: gName, t_id }]);
         }
       }
+      
+      setCreatedTeams(teamsMap);
+      return true;
+    } catch (err) {
+      alert(err.message);
+      return false;
     }
+  };
 
-    alert("Tournament, teams, and players created successfully!");
-    return true;
-  } catch (err) {
-    alert(err.message);
-    return false;
-  }
-};
+  const assignPlayersToTeams = async () => {
+    try {
+      for (const [teamName, teamId] of Object.entries(createdTeams)) {
+        const players = teamPlayers[teamId];
 
+        if (!players || players.length !== Number(playersPerTeam)) {
+          throw new Error(`Please assign exactly ${playersPerTeam} players for team ${teamName}`);
+        }
+
+        for (let playerId of players) {
+          const { error } = await supabase
+            .from("players_in_team")
+            .insert([{ p_id: playerId, team_id: teamId, t_id: tournamentId }]);
+
+          if (error) {
+            throw error;
+          }
+        }
+      }
+
+      alert("Tournament, teams, and players created successfully!");
+      return true;
+    } catch (err) {
+      alert(err.message);
+      return false;
+    }
+  };
 
   const handleConfirmTournament = async () => {
     const success = await createTournamentStructure();
@@ -179,6 +178,7 @@ const assignPlayersToTeams = async () => {
       setTournamentName("");
       setStartDate("");
       setEndDate("");
+      setIsPublic(false);
       setNumGroups(1);
       setGroupNames([]);
       setTeamsPerGroup(1);
@@ -237,6 +237,18 @@ const assignPlayersToTeams = async () => {
             <div className="form-group">
               <label>Number of Groups:</label>
               <input type="number" min="1" value={numGroups} onChange={e => setNumGroups(e.target.value)} />
+            </div>
+            <div className="form-group checkbox-group">
+              <label className="checkbox-label">
+                <input 
+                  type="checkbox" 
+                  checked={isPublic} 
+                  onChange={e => setIsPublic(e.target.checked)} 
+                />
+                <span className="checkmark"></span>
+                Make this tournament public
+              </label>
+              <p className="field-note">Public tournaments are visible to all users, while private tournaments are only visible to you.</p>
             </div>
             <div className="button-group">
               <button className="btn-primary" onClick={() => {

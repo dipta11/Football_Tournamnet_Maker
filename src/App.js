@@ -8,7 +8,8 @@ import MyTournaments from "./components/MyTournament/MyTournament";
 import TournamentDetail from "./components/TournamentDetail/TournamentDetails";
 import AddVenue from "./components/Add Venue/AddVenue";
 import { UpdateMatchResult } from "./components/UpdateResult/UpdateResult";
-
+import PublicTournaments from  "./components/PublicTournaments/PublicTournaments";
+import PublicTournamentDetail from "./components/PublicTournamentDetail/PublicTournamentDetail"
 function App() {
   return (
     <Router>
@@ -35,8 +36,11 @@ function App() {
           <Route
           path="/tournament/:id/update-result"
           element={<UpdateMatchResult />}
-        />
+          />
+        <Route path="/public-tournaments" element={<PublicTournaments />} />
+        {<Route path="/public-tournament/:id" element={<PublicTournamentDetail />} /> }
         </Routes>
+     
       </div>
     </Router>
   );

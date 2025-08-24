@@ -120,7 +120,6 @@ button {
   background: none;
 }
 
-/* Tournament Cards */
 .tournaments-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -172,7 +171,7 @@ button {
   min-width: 120px;
 }
 
-/* Status Badges */
+
 .status-badge {
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
@@ -201,7 +200,7 @@ button {
   color: #c62828;
 }
 
-/* Forms */
+
 .form-group {
   margin-bottom: 1.5rem;
 }
@@ -248,7 +247,6 @@ button {
   margin-top: 0.25rem;
 }
 
-/* Tabs */
 .tabs {
   display: flex;
   border-bottom: 1px solid var(--border-color);
@@ -293,7 +291,7 @@ button {
   background: none;
 }
 
-/* Progress Indicator */
+
 .progress-indicator {
   display: flex;
   justify-content: space-between;
@@ -576,7 +574,7 @@ button {
   }
 }
 
-/* Utility Classes */
+
 .text-center {
   text-align: center;
 }

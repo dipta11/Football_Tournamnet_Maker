@@ -1,40 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../supabaseClient";
 import { useNavigate } from "react-router-dom";
-import "./MyTournament.css";
+import "./PublicTournaments.css";
 
-function MyTournaments() {
+function PublicTournaments() {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate("/login");
-        return;
-      }
-      setUser(user);
-      fetchTournaments(user.id);
-    };
+    fetchPublicTournaments();
+  }, []);
 
-    getUser();
-  }, [navigate]);
-
-  const fetchTournaments = async (userId) => {
+  const fetchPublicTournaments = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from("tournament")
         .select("*")
-        .eq("u_id", userId);
+        .eq("ispublic", true) 
+        ;
 
       if (error) throw error;
       setTournaments(data || []);
     } catch (error) {
-      console.error("Error fetching tournaments:", error);
-      alert("Error loading tournaments: " + error.message);
+      console.error("Error fetching public tournaments:", error);
+      alert("Error loading public tournaments: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -45,33 +36,30 @@ function MyTournaments() {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const viewTournamentDetails = (tournamentId) => {
+    navigate(`/public-tournament/${tournamentId}`);
+  };
+
   if (loading) {
-    return <div className="loading">Loading tournaments...</div>;
+    return <div className="loading">Loading public tournaments...</div>;
   }
 
   return (
-    <div className="my-tournaments-page">
-      <div className="my-tournaments-container">
+    <div className="public-tournaments-page">
+      <div className="public-tournaments-container">
         <div className="header-section">
-          <h1>My Tournaments</h1>
-          <button className="back-btn" onClick={() => navigate("/dashboard")}>
-            ← Back to Dashboard
+          <h1>Public Tournaments</h1>
+          <button className="back-btn" onClick={() => navigate("/")}>
+            ← Back to Home
           </button>
         </div>
 
         {tournaments.length === 0 ? (
           <div className="empty-state">
-            <h2>No tournaments yet</h2>
+            <h2>No public tournaments available</h2>
             <p>
-              You haven't created any tournaments yet. Create your first
-              tournament to get started!
+              There are currently no public tournaments to view. Check back later!
             </p>
-            <button
-              className="btn-primary"
-              onClick={() => navigate("/create-tournament")}
-            >
-              Create Tournament
-            </button>
           </div>
         ) : (
           <div className="tournaments-grid">
@@ -89,24 +77,17 @@ function MyTournaments() {
                     <strong>End:</strong> {formatDate(tournament.end_date)}
                   </p>
                 </div>
+                
+                <div className="tournament-meta">
+                  <span className="public-badge">Public Tournament</span>
+                </div>
 
                 <div className="tournament-footer">
-                  {/* Button 1: Add Matches → Tournament detail page */}
                   <button
                     className="btn-primary"
-                    onClick={() => navigate(`/tournament/${tournament.t_id}`)}
+                    onClick={() => viewTournamentDetails(tournament.t_id)}
                   >
-                    Tournament details
-                  </button>
-
-                  {/* Button 2: Update Results → New page */}
-                  <button
-                    className="btn-secondary"
-                    onClick={() =>
-                      navigate(`/tournament/${tournament.t_id}/update-result`)
-                    }
-                  >
-                    Update Match Results
+                    View Tournament
                   </button>
                 </div>
               </div>
@@ -118,4 +99,4 @@ function MyTournaments() {
   );
 }
 
-export default MyTournaments;
+export default PublicTournaments;
