@@ -10,6 +10,7 @@ import AddVenue from "./components/Add Venue/AddVenue";
 import { UpdateMatchResult } from "./components/UpdateResult/UpdateResult";
 import PublicTournaments from  "./components/PublicTournaments/PublicTournaments";
 import PublicTournamentDetail from "./components/PublicTournamentDetail/PublicTournamentDetail"
+import Stat from "./components/Stat/Stat";
 function App() {
   return (
     <Router>
@@ -39,6 +40,9 @@ function App() {
           />
         <Route path="/public-tournaments" element={<PublicTournaments />} />
         {<Route path="/public-tournament/:id" element={<PublicTournamentDetail />} /> }
+        {}
+        <Route path="/player-stats" element={<Stat/>} />
+
         </Routes>
      
       </div>

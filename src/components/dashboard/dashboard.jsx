@@ -20,13 +20,13 @@ function Dashboard() {
         return;
       }
       setUser(user);
-      
+
       const { data: profile, error } = await supabase
         .from("user")
         .select("fullname, email")
         .eq("id", user.id)
         .single();
-        
+
       if (!error) {
         setUserProfile(profile);
       }
@@ -52,11 +52,9 @@ function Dashboard() {
           console.error("Error fetching tournaments:", tournamentsError);
         }
 
-        // Total players (count players in tournaments created by this user)
-        const { count: playersCount, error: playersError } = await supabase
-          .from("player")
-          .select("*", { count: "exact", head: true })
-          .eq("created_by", user.id);
+        const { data: playersCount, error: playersError } = await supabase
+          .rpc("get_players_count", { user_id: user.id });
+
 
         if (!playersError) {
           setTotalPlayers(playersCount || 0);
@@ -64,18 +62,20 @@ function Dashboard() {
           console.error("Error fetching players:", playersError);
         }
 
-        // Ongoing tournaments for this user
+
         const { count: ongoingCount, error: ongoingError } = await supabase
           .from("tournament")
           .select("*", { count: "exact", head: true })
           .eq("u_id", user.id)
-          .eq("status", "ongoing");
+          .lte("start_date", new Date().toISOString())
+          .gte("end_date", new Date().toISOString());
 
         if (!ongoingError) {
           setOngoingTournaments(ongoingCount || 0);
         } else {
           console.error("Error fetching ongoing tournaments:", ongoingError);
         }
+
       } catch (error) {
         console.error("Unexpected error:", error);
       }
@@ -116,8 +116,10 @@ function Dashboard() {
             <li><a href="/create-tournament">Create Tournament</a></li>
             <li><a href="/my-tournaments">My Tournaments</a></li>
             <li><a href="/add-player">Add Player</a></li>
-            <li> <a href ="/add-venue"> Add Venues</a></li>
+            <li> <a href="/add-venue"> Add Venues</a></li>
+            <li><a href="/player-stats">Player Stats</a></li> 
             <li><a href="/dashboard">Dashboard</a></li>
+
           </ul>
         </div>
       </nav>
@@ -127,10 +129,10 @@ function Dashboard() {
           <div className="profile-header">
             <h2>Your Profile</h2>
             <div className="profile-actions">
-              <button className="edit-profile-btn">Edit Profile</button>
+              
             </div>
           </div>
-          
+
           <div className="profile-card">
             <div className="profile-info">
               <div className="info-item">
@@ -150,7 +152,7 @@ function Dashboard() {
                 <span className="value">{new Date(user.created_at).toLocaleDateString()}</span>
               </div>
             </div>
-            
+
             <div className="profile-stats">
               <div className="profile-stat">
                 <span className="stat-number">{totalTournaments}</span>

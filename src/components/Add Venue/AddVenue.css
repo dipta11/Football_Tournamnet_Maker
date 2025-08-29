@@ -33,17 +33,18 @@
 
 .back-btn {
   background: #e0e0e0;
-  color: #424242;
+  color: #240475;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: none;
 }
 
 .back-btn:hover {
-  background: #bdbdbd;
+  background: #e0e0e0;
+  color: #5f06db;
 }
 
 .player-form {

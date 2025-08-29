@@ -304,11 +304,21 @@ export function UpdateMatchResult() {
               <button type="button" onClick={addTiebreakerGoalRow}>Add Tiebreaker Goal</button>
             </section>
           )}
+<div>
+  <button 
+    type="button" 
+    onClick={() => navigate(-1)} 
+    className="btn-primary" 
+    style={{ marginRight: "10px" }} // gap between buttons
+  >
+    Cancel
+  </button>
 
-          <div style={{ marginTop: 20 }}>
-            <button className="btn-primary" type="submit">Submit Result & Finish Match</button>
-            <button type="button" onClick={() => navigate(-1)} style={{ marginLeft: 10  }}>Cancel</button>
-          </div>
+  <button className="btn-primary" type="submit">
+    Submit Result & Finish Match
+  </button>
+</div>
+
         </form>
       </div>
     </div>

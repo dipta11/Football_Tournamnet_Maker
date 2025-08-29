@@ -99,7 +99,7 @@ function MyTournaments() {
                     Tournament details
                   </button>
 
-                  {/* Button 2: Update Results → New page */}
+                  {}
                   <button
                     className="btn-secondary"
                     onClick={() =>

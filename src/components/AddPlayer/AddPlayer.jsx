@@ -20,12 +20,11 @@ function AddPlayer() {
     }
 
     try {
-      // Get current user
+    
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
       if (!user) throw new Error("User not logged in");
 
-      // Insert player into database - Supabase will automatically generate UUID
       const { error } = await supabase
         .from("player")
         .insert([
@@ -39,16 +38,16 @@ function AddPlayer() {
 
       if (error) throw error;
 
-      // Show success notification
+      
       setAddedPlayerName(fullname);
       setShowSnackbar(true);
       
-      // Reset form
+    
       setFullname("");
       setPosition("");
       setAge("");
       
-      // Hide snackbar after 3 seconds
+    
       setTimeout(() => setShowSnackbar(false), 3000);
     } catch (error) {
       console.error("Error adding player:", error);
@@ -115,7 +114,7 @@ function AddPlayer() {
           </div>
         </form>
 
-        {/* Snackbar Notification */}
+        {}
         {showSnackbar && (
           <div className="snackbar">
             <span>{addedPlayerName} was added successfully!</span>

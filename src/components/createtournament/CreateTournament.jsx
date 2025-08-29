@@ -25,14 +25,14 @@ function CreateTournament() {
         .from("player")
         .select("p_id, fullname")
         .order("fullname");
-      
+
       if (error) {
         console.error("Error fetching players:", error);
       } else {
         setAllPlayers(data);
       }
     };
-    
+
     if (step === 5) {
       fetchPlayers();
     }
@@ -45,14 +45,14 @@ function CreateTournament() {
   };
 
   const handleTeamChange = (group, idx, value) => {
-    const updated = {...groupTeams};
+    const updated = { ...groupTeams };
     if (!updated[group]) updated[group] = [];
     updated[group][idx] = value;
     setGroupTeams(updated);
   };
 
   const handlePlayerChange = (teamId, idx, playerId) => {
-    const updated = {...teamPlayers};
+    const updated = { ...teamPlayers };
     if (!updated[teamId]) updated[teamId] = [];
     updated[teamId][idx] = playerId;
     setTeamPlayers(updated);
@@ -89,7 +89,7 @@ function CreateTournament() {
       }
 
       const teamsMap = {};
-      
+
       for (let gName of groupNames) {
         const teams = groupTeams[gName];
         if (!teams || teams.length !== Number(teamsPerGroup)) {
@@ -109,16 +109,16 @@ function CreateTournament() {
 
           await supabase
             .from("teams_in_tournament")
-            .insert([{ 
+            .insert([{
               t_id,
-              team_id, 
-              wins: 0, 
-              loss: 0, 
-              draw: 0, 
-              matches_played: 0, 
-              goals_for: 0, 
-              goals_against: 0, 
-              points: 0 
+              team_id,
+              wins: 0,
+              loss: 0,
+              draw: 0,
+              matches_played: 0,
+              goals_for: 0,
+              goals_against: 0,
+              points: 0
             }]);
 
           await supabase
@@ -126,7 +126,7 @@ function CreateTournament() {
             .insert([{ team_id, group_name: gName, t_id }]);
         }
       }
-      
+
       setCreatedTeams(teamsMap);
       return true;
     } catch (err) {
@@ -194,7 +194,7 @@ function CreateTournament() {
     <div className="create-tournament-page">
       <div className="create-tournament-container">
         <h2>Create New Tournament</h2>
-        
+
         <div className="progress-indicator">
           <div className={`progress-step ${step >= 1 ? 'active' : ''}`}>
             <span>1</span>
@@ -240,10 +240,10 @@ function CreateTournament() {
             </div>
             <div className="form-group checkbox-group">
               <label className="checkbox-label">
-                <input 
-                  type="checkbox" 
-                  checked={isPublic} 
-                  onChange={e => setIsPublic(e.target.checked)} 
+                <input
+                  type="checkbox"
+                  checked={isPublic}
+                  onChange={e => setIsPublic(e.target.checked)}
                 />
                 <span className="checkmark"></span>
                 Make this tournament public
@@ -281,13 +281,37 @@ function CreateTournament() {
             </div>
             <div className="button-group">
               <button className="btn-secondary" onClick={() => setStep(1)}>Back</button>
-              <button className="btn-primary" onClick={() => {
-                if (groupNames.some(g => !g.trim())) {
-                  alert("Please fill all group names");
-                  return;
-                }
-                setStep(3);
-              }}>Next: Teams Per Group</button>
+              <button
+                className="btn-primary"
+                onClick={() => {
+                  if (!tournamentName || !startDate || !endDate) {
+                    alert("Please fill all fields");
+                    return;
+                  }
+
+                  const now = new Date();
+                  const start = new Date(startDate);
+                  const end = new Date(endDate);
+
+                  now.setHours(0, 0, 0, 0);
+
+                  if (start < now) {
+                    alert("Start date cannot be in the past");
+                    return;
+                  }
+
+                  if (end <= start) {
+                    alert("End date must be after the start date");
+                    return;
+                  }
+
+                  setGroupNames(Array(Number(numGroups)).fill(""));
+                  setStep(2);
+                }}
+              >
+                Next: Add Group Names
+              </button>
+
             </div>
           </div>
         )}
@@ -313,7 +337,7 @@ function CreateTournament() {
                 <div key={gIdx} className="group-card">
                   <h4>{gName}</h4>
                   <div className="team-inputs">
-                    {Array.from({length: Number(teamsPerGroup)}, (_, tIdx) => (
+                    {Array.from({ length: Number(teamsPerGroup) }, (_, tIdx) => (
                       <div className="form-group" key={tIdx}>
                         <label>Team {tIdx + 1}:</label>
                         <input
@@ -339,21 +363,21 @@ function CreateTournament() {
           <div className="form-step">
             <div className="form-group">
               <label>Number of Players per Team:</label>
-              <input 
-                type="number" 
-                min="1" 
-                value={playersPerTeam} 
-                onChange={e => setPlayersPerTeam(e.target.value)} 
+              <input
+                type="number"
+                min="1"
+                value={playersPerTeam}
+                onChange={e => setPlayersPerTeam(e.target.value)}
               />
             </div>
-            
+
             <h3>Assign Players to Teams:</h3>
             <div className="teams-container">
               {Object.entries(createdTeams).map(([teamName, teamId]) => (
                 <div key={teamId} className="team-card">
                   <h4>{teamName}</h4>
                   <div className="player-inputs">
-                    {Array.from({length: Number(playersPerTeam)}, (_, pIdx) => (
+                    {Array.from({ length: Number(playersPerTeam) }, (_, pIdx) => (
                       <div className="form-group" key={pIdx}>
                         <label>Player {pIdx + 1}:</label>
                         <select
@@ -373,7 +397,7 @@ function CreateTournament() {
                 </div>
               ))}
             </div>
-            
+
             <div className="button-group">
               <button className="btn-secondary" onClick={() => setStep(4)}>Back</button>
               <button className="btn-primary" onClick={handleFinalConfirm}>Complete Tournament Creation</button>
