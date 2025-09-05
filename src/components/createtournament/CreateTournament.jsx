@@ -284,34 +284,15 @@ function CreateTournament() {
               <button
                 className="btn-primary"
                 onClick={() => {
-                  if (!tournamentName || !startDate || !endDate) {
-                    alert("Please fill all fields");
+                  if (groupNames.some(name => !name.trim())) {
+                    alert("Please fill in all group names");
                     return;
                   }
-
-                  const now = new Date();
-                  const start = new Date(startDate);
-                  const end = new Date(endDate);
-
-                  now.setHours(0, 0, 0, 0);
-
-                  if (start < now) {
-                    alert("Start date cannot be in the past");
-                    return;
-                  }
-
-                  if (end <= start) {
-                    alert("End date must be after the start date");
-                    return;
-                  }
-
-                  setGroupNames(Array(Number(numGroups)).fill(""));
-                  setStep(2);
+                  setStep(3);
                 }}
               >
-                Next: Add Group Names
+                Next: Set Teams per Group
               </button>
-
             </div>
           </div>
         )}

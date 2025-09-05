@@ -634,3 +634,97 @@ select:disabled {
 .match-card {
   animation: fadeIn 0.4s ease forwards;
 }
+
+.completion-message {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+.completion-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.completion-message h3 {
+  color: #28a745;
+  margin-bottom: 0.5rem;
+}
+
+/* Champion celebration styles */
+.champion-celebration {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  border-radius: 8px;
+  color: #fff;
+  margin: 2rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.trophy {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: bounce 2s infinite;
+}
+
+.champion-celebration h2 {
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.champion-name {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.confetti {
+  font-size: 2rem;
+  margin-top: 1rem;
+  animation: spin 1s infinite;
+}
+
+/* Animations */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Champion banner in header */
+.champion-banner {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.champion-banner h2 {
+  margin: 0;
+  color: #333;
+  font-weight: 700;
+}

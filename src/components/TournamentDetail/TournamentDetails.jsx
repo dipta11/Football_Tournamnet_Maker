@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../../supabaseClient";
 import { useParams, useNavigate } from "react-router-dom";
 import "./TournamentDetails.css";
-// Add this component before the TournamentDetail component
+
+// MatchCard component (unchanged)
 const MatchCard = ({ match, showScores = false }) => {
   const [score, setScore] = useState({ team1: 0, team2: 0, tiebreak1: 0, tiebreak2: 0 });
   const [loadingScore, setLoadingScore] = useState(showScores);
@@ -13,15 +14,10 @@ const MatchCard = ({ match, showScores = false }) => {
     }
   }, [match, showScores]);
 
-  useEffect(() => {
-    console.log('Match data:', match);
-  }, [match]);
-
   const fetchMatchScore = async () => {
     try {
       setLoadingScore(true);
       
-      // Fetch all goals for this match, including goal_type
       const { data: goalsData, error: goalsError } = await supabase
         .from('goal')
         .select('*')
@@ -32,18 +28,14 @@ const MatchCard = ({ match, showScores = false }) => {
         throw goalsError;
       }
       
-      console.log('All goals data:', goalsData);
-      
       if (!goalsData || goalsData.length === 0) {
         setScore({ team1: 0, team2: 0, tiebreak1: 0, tiebreak2: 0 });
         setLoadingScore(false);
         return;
       }
       
-      // Get all player IDs from all goals
       const allPlayerIds = goalsData.map(goal => goal.p_id);
       
-      // Fetch team information for all players in this tournament
       const { data: playersInTeamData, error: playersError } = await supabase
         .from('players_in_team')
         .select('p_id, team_id')
@@ -55,17 +47,13 @@ const MatchCard = ({ match, showScores = false }) => {
         throw playersError;
       }
       
-      // Create a mapping of player ID to team ID
       const playerTeamMap = {};
       playersInTeamData.forEach(item => {
         playerTeamMap[item.p_id] = item.team_id;
       });
       
-      // Count onfield goals for each team
       let team1Goals = 0;
       let team2Goals = 0;
-      
-      // Count tiebreak goals for each team
       let tiebreak1Goals = 0;
       let tiebreak2Goals = 0;
       
@@ -87,9 +75,6 @@ const MatchCard = ({ match, showScores = false }) => {
         }
       });
       
-      console.log('Final onfield score:', team1Goals, '-', team2Goals);
-      console.log('Tiebreak score:', tiebreak1Goals, '-', tiebreak2Goals);
-      
       setScore({ 
         team1: team1Goals, 
         team2: team2Goals, 
@@ -110,47 +95,45 @@ const MatchCard = ({ match, showScores = false }) => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-// Update the MatchCard component's return statement
-return (
-  <div className={`match-card ${match.match_type !== 'group' ? 'knockout' : ''} ${match.match_type === 'final' ? 'final' : ''}`}>
-    <div className="match-header">
-      <span className="match-number">Match #{match.match_no}</span>
-      <span className={`match-status ${match.status}`}>{match.status}</span>
-    </div>
-    <div className="match-teams">
-      <span className="team-name">{match.team1?.team_name || 'TBD'}</span>
-      {match.status === 'finished' ? (
-        loadingScore ? (
-          <span className="vs">Loading...</span>
+  return (
+    <div className={`match-card ${match.match_type !== 'group' ? 'knockout' : ''} ${match.match_type === 'final' ? 'final' : ''}`}>
+      <div className="match-header">
+        <span className="match-number">Match #{match.match_no}</span>
+        <span className={`match-status ${match.status}`}>{match.status}</span>
+      </div>
+      <div className="match-teams">
+        <span className="team-name">{match.team1?.team_name || 'TBD'}</span>
+        {match.status === 'finished' ? (
+          loadingScore ? (
+            <span className="vs">Loading...</span>
+          ) : (
+            <div className="score-container">
+              <span className="score">{score.team1} - {score.team2}</span>
+              {(score.tiebreak1 > 0 || score.tiebreak2 > 0) && (
+                <span className="tiebreak-score">
+                  (Penalties: {score.tiebreak1}-{score.tiebreak2})
+                </span>
+              )}
+            </div>
+          )
         ) : (
-          <div className="score-container">
-            <span className="score">{score.team1} - {score.team2}</span>
-            {/* Show tiebreak scores only if they exist */}
-            {(score.tiebreak1 > 0 || score.tiebreak2 > 0) && (
-              <span className="tiebreak-score">
-                (Penalties: {score.tiebreak1}-{score.tiebreak2})
-              </span>
-            )}
-          </div>
-        )
-      ) : (
-        <span className="vs">vs</span>
-      )}
-      <span className="team-name">{match.team2?.team_name || 'TBD'}</span>
+          <span className="vs">vs</span>
+        )}
+        <span className="team-name">{match.team2?.team_name || 'TBD'}</span>
+      </div>
+      <div className="match-details">
+        <div className="match-time">{formatDate(match.timestamp)}</div>
+        {match.venue && <div className="match-venue">{match.venue.venue_name}</div>}
+      </div>
     </div>
-    <div className="match-details">
-      <div className="match-time">{formatDate(match.timestamp)}</div>
-      {match.venue && <div className="match-venue">{match.venue.venue_name}</div>}
-    </div>
-  </div>
-);
+  );
 };
 
 function TournamentDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // basic data
+  // State variables (unchanged)
   const [tournament, setTournament] = useState(null);
   const [teams, setTeams] = useState([]);
   const [groups, setGroups] = useState([]);
@@ -158,8 +141,6 @@ function TournamentDetail() {
   const [venues, setVenues] = useState([]);
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // stage control
   const [activeTab, setActiveTab] = useState("setup");
   const [groupStageMatchCount, setGroupStageMatchCount] = useState(0);
   const [createdGroupMatches, setCreatedGroupMatches] = useState(0);
@@ -168,11 +149,7 @@ function TournamentDetail() {
   const [groupStageCompleted, setGroupStageCompleted] = useState(false);
   const [tournamentCompleted, setTournamentCompleted] = useState(false);
   const [champion, setChampion] = useState(null);
-
-  // standings cache
   const [groupStandings, setGroupStandings] = useState({});
-
-  // form states common
   const [matchType, setMatchType] = useState("group");
   const [selectedGroup, setSelectedGroup] = useState("");
   const [team1, setTeam1] = useState("");
@@ -180,28 +157,19 @@ function TournamentDetail() {
   const [matchTime, setMatchTime] = useState("");
   const [selectedVenue, setSelectedVenue] = useState("");
   const [knockoutType, setKnockoutType] = useState("quarterfinal");
-
-  // knockout source UI states (for each team we allow selecting source type)
-  const [team1SourceKind, setTeam1SourceKind] = useState("group"); // 'group' or 'match'
+  const [team1SourceKind, setTeam1SourceKind] = useState("group");
   const [team2SourceKind, setTeam2SourceKind] = useState("group");
-
-  // group source choices
   const [team1SourceGroup, setTeam1SourceGroup] = useState("");
   const [team1SourcePosition, setTeam1SourcePosition] = useState(1);
   const [team2SourceGroup, setTeam2SourceGroup] = useState("");
   const [team2SourcePosition, setTeam2SourcePosition] = useState(1);
-
-  // match source choices
-  const [pastKnockoutMatches, setPastKnockoutMatches] = useState([]); // {match_no, m_id, status}
+  const [pastKnockoutMatches, setPastKnockoutMatches] = useState([]);
   const [team1SourceMatchNo, setTeam1SourceMatchNo] = useState(null);
-  const [team1SourceMatchSide, setTeam1SourceMatchSide] = useState("winner"); // winner|loser
+  const [team1SourceMatchSide, setTeam1SourceMatchSide] = useState("winner");
   const [team2SourceMatchNo, setTeam2SourceMatchNo] = useState(null);
   const [team2SourceMatchSide, setTeam2SourceMatchSide] = useState("winner");
-
-  // UI helpers
-  const [positionsForGroup, setPositionsForGroup] = useState({}); // {groupName: numberOfTeams}
+  const [positionsForGroup, setPositionsForGroup] = useState({});
   const [knockoutSetupCompleted, setKnockoutSetupCompleted] = useState(false);
-  
 
   useEffect(() => {
     fetchTournamentData();
@@ -222,201 +190,194 @@ function TournamentDetail() {
     }
   }, [activeTab]);
 
-
-  
-useEffect(() => {
-  // Check if knockout setup was completed in a previous session
-  const savedKnockoutCount = localStorage.getItem(`tournament_${id}_knockout_count`);
-  const savedKnockoutCompleted = localStorage.getItem(`tournament_${id}_knockout_setup_completed`);
-  
-  if (savedKnockoutCount) {
-    setKnockoutMatchCount(parseInt(savedKnockoutCount));
-  }
-  
-  if (savedKnockoutCompleted === 'true') {
-    setKnockoutSetupCompleted(true);
-  }
-  
-  fetchTournamentData();
-}, [id]);
-
-useEffect(() => {
-  // Check if tournament is completed and determine champion
-  if (matches.length > 0 && knockoutMatchCount > 0 && createdKnockoutMatches >= knockoutMatchCount) {
-    const allMatchesFinished = matches.every(match => match.status === 'finished');
-    if (allMatchesFinished) {
-      setTournamentCompleted(true);
-      
-      // Find the final match
-      const finalMatch = matches.find(m => m.match_type === 'final' && m.status === 'finished');
-      if (finalMatch) {
-        // Determine the winner based on actual match results
-        determineChampion(finalMatch);
-      }
-    }
-  }
-}, [matches, knockoutMatchCount, createdKnockoutMatches, teams]);
-
-const determineChampion = async (finalMatch) => {
-  try {
-    // Fetch all goals for the final match
-    const { data: goalsData, error: goalsError } = await supabase
-      .from('goal')
-      .select('*')
-      .eq('m_id', finalMatch.m_id);
+  useEffect(() => {
+    // Check if knockout setup was completed in a previous session
+    const savedKnockoutCount = localStorage.getItem(`tournament_${id}_knockout_count`);
+    const savedKnockoutCompleted = localStorage.getItem(`tournament_${id}_knockout_setup_completed`);
     
-    if (goalsError) throw goalsError;
-    
-    if (!goalsData || goalsData.length === 0) {
-      // No goals, can't determine winner
-      console.error('No goals found for final match');
-      return;
+    if (savedKnockoutCount) {
+      setKnockoutMatchCount(parseInt(savedKnockoutCount));
     }
     
-    // Get all player IDs from all goals
-    const allPlayerIds = goalsData.map(goal => goal.p_id);
-    
-    // Fetch team information for all players in this tournament
-    const { data: playersInTeamData, error: playersError } = await supabase
-      .from('players_in_team')
-      .select('p_id, team_id')
-      .eq('t_id', finalMatch.t_id)
-      .in('p_id', allPlayerIds);
-    
-    if (playersError) throw playersError;
-    
-    // Create a mapping of player ID to team ID
-    const playerTeamMap = {};
-    playersInTeamData.forEach(item => {
-      playerTeamMap[item.p_id] = item.team_id;
-    });
-    
-    // Count onfield goals for each team
-    let team1Goals = 0;
-    let team2Goals = 0;
-    
-    // Count tiebreak goals for each team
-    let tiebreak1Goals = 0;
-    let tiebreak2Goals = 0;
-    
-    goalsData.forEach(goal => {
-      const teamId = playerTeamMap[goal.p_id];
-      
-      if (goal.goal_type === 'onfield') {
-        if (teamId === finalMatch.team1_id) {
-          team1Goals++;
-        } else if (teamId === finalMatch.team2_id) {
-          team2Goals++;
-        }
-      } else if (goal.goal_type === 'tiebreak') {
-        if (teamId === finalMatch.team1_id) {
-          tiebreak1Goals++;
-        } else if (teamId === finalMatch.team2_id) {
-          tiebreak2Goals++;
+    if (savedKnockoutCompleted === 'true') {
+      setKnockoutSetupCompleted(true);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    // Check if tournament is completed and determine champion
+    if (matches.length > 0 && knockoutMatchCount > 0 && createdKnockoutMatches >= knockoutMatchCount) {
+      const allMatchesFinished = matches.every(match => match.status === 'finished');
+      if (allMatchesFinished) {
+        setTournamentCompleted(true);
+        
+        // Find the final match
+        const finalMatch = matches.find(m => m.match_type === 'final' && m.status === 'finished');
+        if (finalMatch) {
+          // Determine the winner based on actual match results
+          determineChampion(finalMatch);
         }
       }
-    });
-    
-    // Determine the winner
-    let winnerId = null;
-    
-    // First check onfield goals
-    if (team1Goals > team2Goals) {
-      winnerId = finalMatch.team1_id;
-    } else if (team2Goals > team1Goals) {
-      winnerId = finalMatch.team2_id;
-    } else {
-      // If onfield goals are tied, check tiebreak goals
-      if (tiebreak1Goals > tiebreak2Goals) {
+    }
+  }, [matches, knockoutMatchCount, createdKnockoutMatches, teams]);
+
+  const determineChampion = async (finalMatch) => {
+    try {
+      // Fetch all goals for the final match
+      const { data: goalsData, error: goalsError } = await supabase
+        .from('goal')
+        .select('*')
+        .eq('m_id', finalMatch.m_id);
+      
+      if (goalsError) throw goalsError;
+      
+      if (!goalsData || goalsData.length === 0) {
+        // No goals, can't determine winner
+        console.error('No goals found for final match');
+        return;
+      }
+      
+      // Get all player IDs from all goals
+      const allPlayerIds = goalsData.map(goal => goal.p_id);
+      
+      // Fetch team information for all players in this tournament
+      const { data: playersInTeamData, error: playersError } = await supabase
+        .from('players_in_team')
+        .select('p_id, team_id')
+        .eq('t_id', finalMatch.t_id)
+        .in('p_id', allPlayerIds);
+      
+      if (playersError) throw playersError;
+      
+      // Create a mapping of player ID to team ID
+      const playerTeamMap = {};
+      playersInTeamData.forEach(item => {
+        playerTeamMap[item.p_id] = item.team_id;
+      });
+      
+      // Count onfield goals for each team
+      let team1Goals = 0;
+      let team2Goals = 0;
+      
+      // Count tiebreak goals for each team
+      let tiebreak1Goals = 0;
+      let tiebreak2Goals = 0;
+      
+      goalsData.forEach(goal => {
+        const teamId = playerTeamMap[goal.p_id];
+        
+        if (goal.goal_type === 'onfield') {
+          if (teamId === finalMatch.team1_id) {
+            team1Goals++;
+          } else if (teamId === finalMatch.team2_id) {
+            team2Goals++;
+          }
+        } else if (goal.goal_type === 'tiebreak') {
+          if (teamId === finalMatch.team1_id) {
+            tiebreak1Goals++;
+          } else if (teamId === finalMatch.team2_id) {
+            tiebreak2Goals++;
+          }
+        }
+      });
+      
+      // Determine the winner
+      let winnerId = null;
+      
+      // First check onfield goals
+      if (team1Goals > team2Goals) {
         winnerId = finalMatch.team1_id;
-      } else if (tiebreak2Goals > tiebreak1Goals) {
+      } else if (team2Goals > team1Goals) {
         winnerId = finalMatch.team2_id;
       } else {
-        // If still tied, it's a draw (shouldn't happen in a final)
-        console.error('Final match ended in a draw');
-      }
-    }
-    
-    // Set the champion
-    if (winnerId) {
-      const winner = teams.find(t => t.id === winnerId);
-      if (winner) setChampion(winner);
-    }
-  } catch (err) {
-    console.error('Error determining champion:', err);
-  }
-};
-const fetchTournamentData = async () => {
-  try {
-    setLoading(true);
-
-    // tournament
-    const { data: tournamentData, error: tournamentError } = await supabase
-      .from('tournament')
-      .select('*')
-      .eq('t_id', id)
-      .single();
-    if (tournamentError) throw tournamentError;
-    setTournament(tournamentData);
-
-    // teams
-    const { data: teamsData, error: teamsError } = await supabase
-      .from('teams_in_tournament')
-      .select(`team_id, team:team_id(team_name)`)
-      .eq('t_id', id);
-    if (teamsError) throw teamsError;
-    setTeams((teamsData || []).map(item => ({ id: item.team_id, name: item.team.team_name })));
-
-    // groups
-    const { data: groupsData, error: groupsError } = await supabase
-      .from('group')
-      .select('group_name')
-      .eq('t_id', id);
-    if (groupsError) throw groupsError;
-    const gnames = (groupsData || []).map(x => x.group_name);
-    setGroups(gnames);
-
-    // venues
-    const { data: venuesData, error: venuesError } = await supabase
-      .from('venue')
-      .select('v_id, venue_name');
-    if (venuesError) throw venuesError;
-    setVenues(venuesData || []);
-
-    // matches and standings
-    await fetchMatches();
-    await fetchGroupStandingsForAllGroups(gnames);
-
-    // group stage completion flag (rpc)
-    const { data: completedData, error: completedError } = await supabase
-      .rpc('is_group_stage_completed', { tournament_uuid: id });
-    if (!completedError) {
-      setGroupStageCompleted(Boolean(completedData));
-      
-      // Determine which tab to show based on current state
-      if (completedData) {
-        // Check if knockout setup is already completed
-        const isKnockoutSetupCompleted = localStorage.getItem(`tournament_${id}_knockout_setup_completed`) === 'true';
-        
-        if (isKnockoutSetupCompleted) {
-          setActiveTab('knockout-matches');
+        // If onfield goals are tied, check tiebreak goals
+        if (tiebreak1Goals > tiebreak2Goals) {
+          winnerId = finalMatch.team1_id;
+        } else if (tiebreak2Goals > tiebreak1Goals) {
+          winnerId = finalMatch.team2_id;
         } else {
-          setActiveTab('knockout-setup');
+          // If still tied, it's a draw (shouldn't happen in a final)
+          console.error('Final match ended in a draw');
         }
       }
-    }
-
-  } catch (err) {
-    console.error('fetchTournamentData error', err);
-    alert('Error loading tournament: ' + (err.message || String(err)));
-  } finally {
-    setLoading(false);
-  }
-};
-
-
       
-  
+      // Set the champion
+      if (winnerId) {
+        const winner = teams.find(t => t.id === winnerId);
+        if (winner) setChampion(winner);
+      }
+    } catch (err) {
+      console.error('Error determining champion:', err);
+    }
+  };
+
+  const fetchTournamentData = async () => {
+    try {
+      setLoading(true);
+
+      // tournament
+      const { data: tournamentData, error: tournamentError } = await supabase
+        .from('tournament')
+        .select('*')
+        .eq('t_id', id)
+        .single();
+      if (tournamentError) throw tournamentError;
+      setTournament(tournamentData);
+
+      // teams
+      const { data: teamsData, error: teamsError } = await supabase
+        .from('teams_in_tournament')
+        .select(`team_id, team:team_id(team_name)`)
+        .eq('t_id', id);
+      if (teamsError) throw teamsError;
+      setTeams((teamsData || []).map(item => ({ id: item.team_id, name: item.team.team_name })));
+
+      // groups
+      const { data: groupsData, error: groupsError } = await supabase
+        .from('group')
+        .select('group_name')
+        .eq('t_id', id);
+      if (groupsError) throw groupsError;
+      const gnames = (groupsData || []).map(x => x.group_name);
+      setGroups(gnames);
+
+      // venues
+      const { data: venuesData, error: venuesError } = await supabase
+        .from('venue')
+        .select('v_id, venue_name');
+      if (venuesError) throw venuesError;
+      setVenues(venuesData || []);
+
+      // matches and standings
+      await fetchMatches();
+      await fetchGroupStandingsForAllGroups(gnames);
+
+      // group stage completion flag (rpc)
+      const { data: completedData, error: completedError } = await supabase
+        .rpc('is_group_stage_completed', { tournament_uuid: id });
+      if (!completedError) {
+        setGroupStageCompleted(Boolean(completedData));
+        
+        // Determine which tab to show based on current state
+        if (completedData) {
+          // Check if knockout setup is already completed
+          const isKnockoutSetupCompleted = localStorage.getItem(`tournament_${id}_knockout_setup_completed`) === 'true';
+          
+          if (isKnockoutSetupCompleted) {
+            setActiveTab('knockout-matches');
+          } else {
+            setActiveTab('knockout-setup');
+          }
+        }
+      }
+
+    } catch (err) {
+      console.error('fetchTournamentData error', err);
+      alert('Error loading tournament: ' + (err.message || String(err)));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchMatches = async () => {
     try {
@@ -666,13 +627,13 @@ const fetchTournamentData = async () => {
           )}
         </div>
 
-       <div className="tabs">
-  <button className={activeTab === 'setup' ? 'active' : ''} onClick={() => setActiveTab('setup')}>Tournament Setup</button>
-  <button className={activeTab === 'group-matches' ? 'active' : ''} onClick={() => setActiveTab('group-matches')} disabled={groupStageMatchCount === 0}>Group Matches ({createdGroupMatches}/{groupStageMatchCount})</button>
-  <button className={activeTab === 'knockout-setup' ? 'active' : ''} onClick={() => setActiveTab('knockout-setup')} disabled={!groupStageCompleted || knockoutSetupCompleted}>Knockout Setup</button>
-  <button className={activeTab === 'knockout-matches' ? 'active' : ''} onClick={() => setActiveTab('knockout-matches')} disabled={!groupStageCompleted || !knockoutSetupCompleted}>Knockout Matches ({createdKnockoutMatches}/{knockoutMatchCount})</button>
-  <button className={activeTab === 'fixture' ? 'active' : ''} onClick={() => setActiveTab('fixture')}>View Fixture</button>
-</div>
+        <div className="tabs">
+          <button className={activeTab === 'setup' ? 'active' : ''} onClick={() => setActiveTab('setup')}>Tournament Setup</button>
+          <button className={activeTab === 'group-matches' ? 'active' : ''} onClick={() => setActiveTab('group-matches')} disabled={groupStageMatchCount === 0}>Group Matches ({createdGroupMatches}/{groupStageMatchCount})</button>
+          <button className={activeTab === 'knockout-setup' ? 'active' : ''} onClick={() => setActiveTab('knockout-setup')} disabled={!groupStageCompleted || knockoutSetupCompleted}>Knockout Setup</button>
+          <button className={activeTab === 'knockout-matches' ? 'active' : ''} onClick={() => setActiveTab('knockout-matches')} disabled={!groupStageCompleted || !knockoutSetupCompleted}>Knockout Matches ({createdKnockoutMatches}/{knockoutMatchCount})</button>
+          <button className={activeTab === 'fixture' ? 'active' : ''} onClick={() => setActiveTab('fixture')}>View Fixture</button>
+        </div>
 
         {activeTab === 'setup' && (
           <div className="tournament-setup">
@@ -680,7 +641,6 @@ const fetchTournamentData = async () => {
             <div className="form-group">
               <label>Number of Group Stage Matches:</label>
               <input type="number" min="0" value={groupStageMatchCount} onChange={(e)=>setGroupStageMatchCount(parseInt(e.target.value)||0)} />
-              <p className="field-note">Based on your {groups.length} groups with {teams.length / (groups.length||1)} teams each, we recommend {groups.length * (teams.length / (groups.length||1)) * ((teams.length / (groups.length||1)) - 1) / 2} matches (round-robin).</p>
             </div>
             <button className="btn-primary" onClick={() => setActiveTab('group-matches')} disabled={groupStageMatchCount<=0}>Proceed to Group Matches</button>
           </div>
@@ -734,44 +694,60 @@ const fetchTournamentData = async () => {
             )}
           </div>
         )}
-{activeTab === 'knockout-setup' && (
-  <div className="knockout-setup">
-    <h2>Knockout Stage Setup</h2>
-    <div className="form-group">
-      <label>Number of Knockout Matches:</label>
-      <input 
-        type="number" 
-        min="0" 
-        value={knockoutMatchCount} 
-        onChange={(e) => setKnockoutMatchCount(parseInt(e.target.value) || 0)} 
-      />
-      <p className="field-note">You can create these matches over multiple sessions. The system will remember how many you've created.</p>
-    </div>
-    <button className="btn-primary" onClick={() => {
-      // Save to localStorage
-      localStorage.setItem(`tournament_${id}_knockout_count`, knockoutMatchCount.toString());
-      localStorage.setItem(`tournament_${id}_knockout_setup_completed`, 'true');
-      
-      setKnockoutSetupCompleted(true);
-      setActiveTab('knockout-matches');
-    }} disabled={knockoutMatchCount <= 0}>
-      Proceed to Knockout Matches
-    </button>
-  </div>
-)}
-        {activeTab === 'knockout-matches' && (
-          <div className="knockout-creation">
-            <h2>Create Knockout Matches ({createdKnockoutMatches}/{knockoutMatchCount})</h2>
-            {createdKnockoutMatches >= knockoutMatchCount ? (
-              <div className="completion-message">
-                <p>All knockout matches have been created. The tournament can now proceed.</p>
-                {tournamentCompleted && champion && (
-                  <div className="champion-announcement">
-                    <h3>Tournament Champion: {champion.name}</h3>
-                  </div>
-                )}
-              </div>
+
+        {activeTab === 'knockout-setup' && (
+          <div className="knockout-setup">
+            <h2>Knockout Stage Setup</h2>
+            <div className="form-group">
+              <label>Number of Knockout Matches:</label>
+              <input 
+                type="number" 
+                min="0" 
+                value={knockoutMatchCount} 
+                onChange={(e) => setKnockoutMatchCount(parseInt(e.target.value) || 0)} 
+              />
+            </div>
+            <button className="btn-primary" onClick={() => {
+              // Save to localStorage
+              localStorage.setItem(`tournament_${id}_knockout_count`, knockoutMatchCount.toString());
+              localStorage.setItem(`tournament_${id}_knockout_setup_completed`, 'true');
+              
+              setKnockoutSetupCompleted(true);
+              setActiveTab('knockout-matches');
+            }} disabled={knockoutMatchCount <= 0}>
+              Proceed to Knockout Matches
+            </button>
+          </div>
+        )}
+
+{activeTab === 'knockout-matches' && (
+  <div className="knockout-creation">
+    <h2>Create Knockout Matches ({createdKnockoutMatches}/{knockoutMatchCount})</h2>
+    {createdKnockoutMatches >= knockoutMatchCount ? (
+      <div className="completion-message">
+        {!tournamentCompleted ? (
+          <>
+            <div className="completion-icon">✅</div>
+            <h3>All Knockout Matches Created</h3>
+            <p>The tournament is ready to begin! Matches can now be played and results recorded.</p>
+          </>
+        ) : (
+          <div className="champion-celebration">
+            <div className="trophy">🏆</div>
+            <h2>Tournament Completed!</h2>
+            {champion ? (
+              <>
+                <h1 className="champion-name">{champion.name}</h1>
+                <p>are the champions!</p>
+                <div className="confetti">🎉</div>
+              </>
             ) : (
+              <p>Final match results are being calculated...</p>
+            )}
+          </div>
+        )}
+      </div>
+    ) : (
               <form onSubmit={handleCreateMatch}>
                 <div className="form-group">
                   <label>Knockout Type:</label>
@@ -932,61 +908,61 @@ const fetchTournamentData = async () => {
           </div>
         )}
 
-{activeTab === 'fixture' && (
-  <div className="fixture-view">
-    <div className="fixture-header">
-      <h2>Tournament Fixture</h2>
-      <div className="legend">
-        <div className="legend-item">
-          <span className="status-indicator finished"></span>
-          <span>Completed</span>
-        </div>
-        <div className="legend-item">
-          <span className="status-indicator notfinished"></span>
-          <span>Upcoming</span>
-        </div>
-      </div>
-    </div>
-    
-    {matches.length === 0 ? (
-      <div className="empty-state">
-        <div className="empty-icon">📅</div>
-        <h3>No Matches Scheduled</h3>
-        <p>Create matches using the other tabs to build your tournament fixture.</p>
-      </div>
-    ) : (
-      <div className="fixture-container">
-        {["group", "quarterfinal", "semifinal", "final", "thirdplace"].map(type => {
-          const typeMatches = matches.filter(m => m.match_type === type);
-          if (typeMatches.length === 0) return null;
-          
-          return (
-            <div key={type} className="match-type-section">
-              <div className="section-header">
-                <h3>
-                  {type === 'group' ? 'Group Stage' : 
-                   type === 'quarterfinal' ? 'Quarter Finals' :
-                   type === 'semifinal' ? 'Semi Finals' :
-                   type === 'final' ? 'Final Match' : 'Third Place Playoff'}
-                </h3>
-                <span className="match-count">{typeMatches.length} match{typeMatches.length !== 1 ? 'es' : ''}</span>
-              </div>
-              <div className="matches-grid">
-                {typeMatches.map(match => (
-                  <MatchCard 
-                    key={match.m_id} 
-                    match={match} 
-                    showScores={true}
-                  />
-                ))}
+        {activeTab === 'fixture' && (
+          <div className="fixture-view">
+            <div className="fixture-header">
+              <h2>Tournament Fixture</h2>
+              <div className="legend">
+                <div className="legend-item">
+                  <span className="status-indicator finished"></span>
+                  <span>Completed</span>
+                </div>
+                <div className="legend-item">
+                  <span className="status-indicator notfinished"></span>
+                  <span>Upcoming</span>
+                </div>
               </div>
             </div>
-          );
-        })}
-      </div>
-    )}
-  </div>
-)}
+            
+            {matches.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">📅</div>
+                <h3>No Matches Scheduled</h3>
+                <p>Create matches using the other tabs to build your tournament fixture.</p>
+              </div>
+            ) : (
+              <div className="fixture-container">
+                {["group", "quarterfinal", "semifinal", "final", "thirdplace"].map(type => {
+                  const typeMatches = matches.filter(m => m.match_type === type);
+                  if (typeMatches.length === 0) return null;
+                  
+                  return (
+                    <div key={type} className="match-type-section">
+                      <div className="section-header">
+                        <h3>
+                          {type === 'group' ? 'Group Stage' : 
+                           type === 'quarterfinal' ? 'Quarter Finals' :
+                           type === 'semifinal' ? 'Semi Finals' :
+                           type === 'final' ? 'Final Match' : 'Third Place Playoff'}
+                        </h3>
+                        <span className="match-count">{typeMatches.length} match{typeMatches.length !== 1 ? 'es' : ''}</span>
+                      </div>
+                      <div className="matches-grid">
+                        {typeMatches.map(match => (
+                          <MatchCard 
+                            key={match.m_id} 
+                            match={match} 
+                            showScores={true}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
       </div>
     </div>
