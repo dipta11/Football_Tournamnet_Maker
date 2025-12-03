@@ -9,7 +9,7 @@ npm install
 ```
 
 ## Usage
- Live demo :  [try the application here:](football-tournamnet-maker.vercel.app)
+ Live demo : https://football-tournamnet-maker.vercel.app/
 
 clone command:
 git clone https://github.com/dipta11/Football_Tournamnet_Maker.git
